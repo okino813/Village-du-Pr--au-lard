@@ -5,16 +5,17 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
+use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
 
 class UserController extends Controller
 {
-    public function __construct(User $user)
-    {
-        $this->user = $user;
-    }
+
 
     public function currentUser()
     {
+        $user = JWTAuth::parseToken()->authenticate();
+
         return response()->json([
             'meta' => [
                 'code' => 200,
@@ -22,8 +23,9 @@ class UserController extends Controller
                 'message' => 'User fetched successfully!',
             ],
             'data' => [
-                'user' => auth()->user(),
+                'user' => $user,
+                'isAdmin' => true, // ou tout autre champ
             ],
-        ]);
-    }
+            ]);
+        }
 }

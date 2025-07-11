@@ -12,7 +12,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+         $middleware->alias([
+        'check.auth.sanctum' => \App\Http\Middleware\CheckAuthSanctum::class,
+    ]);
+        // $middleware->push(\App\Http\Middleware\CheckAuthSanctum::class);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
