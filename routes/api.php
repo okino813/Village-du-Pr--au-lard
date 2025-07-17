@@ -20,8 +20,10 @@ Route::post('/login', [AuthController::class, 'login'])->name('login');
 Route::get('/currentuser', [UserController::class, 'currentUser'])->name('currentuser')->middleware('jwt.auth');
 Route::get('/users', [UserController::class, 'index'])->name('index.user')->middleware('jwt.auth');
 Route::get('/categorys', [CategoryController::class, 'index'])->name('index.user')->middleware('jwt.auth');
+Route::get('/places', [PlaceController::class, 'index'])->name('index.user')->middleware('jwt.auth');
 Route::post('/categorys/create', [CategoryController::class, 'store'])->name('index.user')->middleware('jwt.auth');
 Route::post('/place/create', [PlaceController::class, 'store'])->name('index.user')->middleware('jwt.auth');
+Route::get('/storage/places/{img}', [PlaceController::class, 'img'])->name('index.user');
 
 // Route::middleware('auth:sanctum')->group(function() {
 //     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');

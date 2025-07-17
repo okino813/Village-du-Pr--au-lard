@@ -12,7 +12,30 @@ class PlaceController extends Controller
      */
     public function index()
     {
-        //
+        $places = Place::with("category")->get();
+
+        return response()->json([
+            'meta' => [
+                'code' => 200,
+                'status' => 'success',
+                'message' => 'Places fetched successfully!',
+            ],
+            'data' => [
+                'places' => $places,
+                'isAdmin' => true, // ou tout autre champ
+            ],
+        ]);
+    }
+
+    public function img(String $img)
+    {
+        $path = storage_path('app/public/places/' . $img);
+
+        if (!file_exists($path)) {
+            return response()->json(['error' => 'Image not found.'], 404);
+        }
+
+        return response()->file($path);
     }
 
     /**
@@ -33,7 +56,10 @@ class PlaceController extends Controller
 
         if ($request->hasFile('img_preview')) {
             $image = $request->file('img_preview');
-            $imageName = time() . '_' . $image->getClientOriginalName();
+            $originalName = $image->getClientOriginalName();
+            // Remplace les espaces et caractères spéciaux par des tirets du bas
+            $sanitizedName = preg_replace('/[^A-Za-z0-9_\-\.]/', '_', $originalName);
+            $imageName = time() . '_' . $sanitizedName;
             $imagePath = $image->storeAs('places', $imageName, 'public');
             $validated['img_preview'] = $imagePath;
         }
