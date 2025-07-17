@@ -26,6 +26,24 @@ class UserController extends Controller
                 'user' => $user,
                 'isAdmin' => true, // ou tout autre champ
             ],
-            ]);
-        }
+        ]);
+    }
+
+
+     public function index()
+    {
+        $users = User::all();
+
+        return response()->json([
+            'meta' => [
+                'code' => 200,
+                'status' => 'success',
+                'message' => 'User fetched successfully!',
+            ],
+            'data' => [
+                'user' => $users,
+                'isAdmin' => true, // ou tout autre champ
+            ],
+        ]);
+    }
 }

@@ -7,12 +7,22 @@ use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+
     public function index()
     {
-        //
+        $categorys = Category::all();
+
+        return response()->json([
+            'meta' => [
+                'code' => 200,
+                'status' => 'success',
+                'message' => 'Categorys fetched successfully!',
+            ],
+            'data' => [
+                'cat' => $categorys,
+                'isAdmin' => true, // ou tout autre champ
+            ],
+        ]);
     }
 
     /**
@@ -20,7 +30,27 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'color' => 'required|string|max:255',
+            'slug' => 'required|string|max:255',
+        ]);
+
+
+        $category = Category::create([
+            'name' => $validated['name'],
+            'color' => $validated['color'],
+            'slug' => $validated['slug'],
+        ]);
+
+        return response()->json([
+            'meta' => [
+                'code' => 201,
+                'status' => 'success',
+                'message' => 'Category created successfully!',
+            ],
+            'data' => $category,
+        ], 201);
     }
 
     /**

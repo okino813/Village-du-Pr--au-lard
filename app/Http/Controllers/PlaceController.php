@@ -20,7 +20,27 @@ class PlaceController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'content' => 'required|string',
+            'img_preview' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'latitude' => 'required|numeric',
+            'longitude' => 'required|numeric',
+            'slug' => 'required|string|max:255|unique:places,slug',
+            'id_category' => 'required|integer|exists:categories,id',
+            'id_user' => 'required|integer|exists:users,id',
+        ]);
+
+        if ($request->hasFile('img_preview')) {
+            $image = $request->file('img_preview');
+            $imageName = time() . '_' . $image->getClientOriginalName();
+            $imagePath = $image->storeAs('places', $imageName, 'public');
+            $validated['img_preview'] = $imagePath;
+        }
+
+        $place = Place::create($validated);
+
+        return response()->json($place, 201);
     }
 
     /**
