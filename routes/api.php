@@ -21,10 +21,10 @@ Route::get('/currentuser', [UserController::class, 'currentUser'])->name('curren
 Route::get('/users', [UserController::class, 'index'])->name('index.user')->middleware('jwt.auth');
 Route::get('/categorys', [CategoryController::class, 'index'])->name('index.user')->middleware('jwt.auth');
 Route::get('/places', [PlaceController::class, 'index'])->name('index.user')->middleware('jwt.auth');
+Route::get('/place/{id}', [PlaceController::class, 'show']);
+Route::get('/category/{id}', [CategoryController::class, 'show']);
+Route::post('/place/update/{id}/', [PlaceController::class, 'update'])->name('index.user')->middleware('jwt.auth');
+Route::post('/category/update/{id}/', [CategoryController::class, 'update'])->name('index.user')->middleware('jwt.auth');
 Route::post('/categorys/create', [CategoryController::class, 'store'])->name('index.user')->middleware('jwt.auth');
 Route::post('/place/create', [PlaceController::class, 'store'])->name('index.user')->middleware('jwt.auth');
 Route::get('/storage/places/{img}', [PlaceController::class, 'img'])->name('index.user');
-
-// Route::middleware('auth:sanctum')->group(function() {
-//     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-// });

@@ -56,17 +56,47 @@ class CategoryController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Category $category)
+    public function show(Int $id)
     {
-        //
+        $category = Category::find($id);
+
+        return response()->json([
+            'meta' => [
+                'code' => 200,
+                'status' => 'success',
+                'message' => 'Places fetched successfully!',
+            ],
+            'data' => [
+                'cat' => $category,
+                'isAdmin' => true, // ou tout autre champ
+            ],
+        ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Category $category)
+    public function update(Request $request, Int $id)
     {
-        //
+
+        $category = Category::find($id);
+        
+        $validated = $request->validate([
+            'name' => 'sometimes|required|string|max:255',
+            'color' => 'sometimes|required|string|max:255',
+            'slug' => 'sometimes|required|string|max:255',
+        ]);
+
+        $category->update($validated);
+
+        return response()->json([
+            'meta' => [
+                'code' => 200,
+                'status' => 'success',
+                'message' => 'Category updated successfully!',
+            ],
+            'data' => $category,
+        ]);
     }
 
     /**

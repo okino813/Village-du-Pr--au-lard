@@ -72,17 +72,78 @@ class PlaceController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Place $place)
+    public function show(Int $place)
     {
-        //
+        $place = Place::find($place);
+
+        return response()->json([
+            'meta' => [
+                'code' => 200,
+                'status' => 'success',
+                'message' => 'Places fetched successfully!',
+            ],
+            'data' => [
+                'place' => $place,
+                'isAdmin' => true, // ou tout autre champ
+            ],
+        ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Place $place)
+    public function update(Request $request, Int $id)
     {
-        //
+
+        try{
+            $place = Place::find($id);
+            $validated = $request->validate([
+                'title' => 'sometimes|required|string|max:255',
+                'content' => 'sometimes|required|string',
+                'img_preview' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'latitude' => 'sometimes|required|numeric',
+                'longitude' => 'sometimes|required|numeric',
+                'slug' => 'sometimes|required|string|max:255|unique:places,slug,' . $place->id,
+                'id_category' => 'sometimes|required|integer|exists:categories,id',
+                'id_user' => 'sometimes|required|integer|exists:users,id',
+            ]);
+
+            // Vérifie si une nouvelle image a été uploadée
+            if ($request->hasFile('img_preview')) {
+                $image = $request->file('img_preview');
+                $originalName = $image->getClientOriginalName();
+                $sanitizedName = preg_replace('/[^A-Za-z0-9_\-\.]/', '_', $originalName);
+                $imageName = time() . '_' . $sanitizedName;
+                $imagePath = $image->storeAs('places', $imageName, 'public');
+                $validated['img_preview'] = $imagePath;
+            } else {
+                // Si le nom de l'image n'a pas changé, on ne modifie pas le champ img_preview
+                unset($validated['img_preview']);
+            }
+
+            $place->update($validated);
+
+            return response()->json([
+                'meta' => [
+                    'code' => 200,
+                    'status' => 'success',
+                    'message' => 'Place updated successfully!',
+                ],
+                'data' => [
+                    'place' => $place,
+                ],
+            ]);
+        }
+        catch (\Exception $e) {
+            return response()->json([
+                'meta' => [
+                    'code' => 500,
+                    'status' => 'error',
+                    'message' => 'An error occurred while updating the place.',
+                ],
+                'error' => $e->getMessage(),
+            ], 500);
+        }
     }
 
     /**
