@@ -14,12 +14,13 @@ return new class extends Migration
         Schema::create('places', function (Blueprint $table) {
             $table->id();
             $table->string('title');
-            $table->string('content');
+            $table->text('content');
             $table->string('img_preview');
             $table->string('latitude');
             $table->string('longitude');
             $table->string('slug')->unique();
-            $table->foreignId('id_category')->constrained('categorys')->onDelete('cascade');
+            $table->string('color');
+            $table->foreignId('id_category')->constrained('categories')->onDelete('cascade');
             $table->foreignId('id_user')->constrained('users')->onDelete('cascade');
             $table->timestamps();
         });

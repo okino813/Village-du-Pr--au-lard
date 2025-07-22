@@ -46,10 +46,11 @@ class PlaceController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'content' => 'required|string',
-            'img_preview' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'img_preview' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'latitude' => 'required|numeric',
             'longitude' => 'required|numeric',
             'slug' => 'required|string|max:255|unique:places,slug',
+            'color' => 'required|string|max:255',
             'id_category' => 'required|integer|exists:categories,id',
             'id_user' => 'required|integer|exists:users,id',
         ]);
@@ -89,6 +90,39 @@ class PlaceController extends Controller
         ]);
     }
 
+    public function showFront(String $category, String $place)
+    {
+        try{
+            $place = Place::where('slug', $place)->with('user')->firstOrFail();
+            // ON check si il existe
+            if (!$place) {
+                return response()->json(['error' => 'Place not found.'], 404);
+            }
+
+            return response()->json([
+                'meta' => [
+                    'code' => 200,
+                    'status' => 'success',
+                    'message' => 'Places fetched successfully!',
+                ],
+                'data' => [
+                    'place' => $place,
+                    'isAdmin' => true, // ou tout autre champ
+                ],
+            ]);
+        }
+        catch(\Exception $e) {
+            return response()->json([
+                'meta' => [
+                    'code' => 404,
+                    'status' => 'error',
+                    'message' => 'An error occurred while fetching the place.',
+                ],
+                'error' => $e->getMessage(),
+            ], 404);
+        }
+    }
+
     /**
      * Update the specified resource in storage.
      */
@@ -100,7 +134,8 @@ class PlaceController extends Controller
             $validated = $request->validate([
                 'title' => 'sometimes|required|string|max:255',
                 'content' => 'sometimes|required|string',
-                'img_preview' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'color' => 'sometimes|required|string',
+                'img_preview' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
                 'latitude' => 'sometimes|required|numeric',
                 'longitude' => 'sometimes|required|numeric',
                 'slug' => 'sometimes|required|string|max:255|unique:places,slug,' . $place->id,

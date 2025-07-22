@@ -15,6 +15,7 @@ class Place extends Model
         'latitude',
         'longitude',
         'slug',
+        "color",
         'id_category',
         'id_user',
     ];
